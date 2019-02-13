@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 # TODO add description
 
 NS3_MMWAVE_URL="https://github.com/nyuwireless-unipd/ns3-mmwave.git"
