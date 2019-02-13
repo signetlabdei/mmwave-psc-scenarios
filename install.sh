@@ -52,7 +52,7 @@ elif [ $choice = 3 ]; then
   INSTALLATION_FOLDER="high-school-shooting"
 
   # Clone the ns3-mmwave module
-  git clone -b new-handover $NS3_MMWAVE_IAB_URL $INSTALLATION_FOLDER
+  git clone -b iab-release $NS3_MMWAVE_IAB_URL $INSTALLATION_FOLDER
 
   # Appy the patch
   cd $INSTALLATION_FOLDER
