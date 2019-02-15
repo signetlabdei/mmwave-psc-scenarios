@@ -1,5 +1,4 @@
 #!/bin/bash
-# TODO add description
 
 NS3_MMWAVE_URL="https://github.com/nyuwireless-unipd/ns3-mmwave.git"
 NS3_MMWAVE_IAB_URL="https://github.com/signetlabdei/ns3-mmwave-iab"
@@ -24,7 +23,10 @@ if [ $choice = 1 ]; then
 
   # Appy the patch
   cd $INSTALLATION_FOLDER
-  patch -p1 < ../.patches/chemical-plant-scenario.patch
+  patch -p1 < ../.patches/ns3-mmwave-psc.patch
+
+  # Copy the example
+  cp ../psc-scenarios/chemical-plant-scenario.cc scratch/.
 
   # Configure the ns3-module
   ./waf configure --disable-python
@@ -40,7 +42,10 @@ elif [ $choice = 2 ]; then
 
   # Appy the patch
   cd $INSTALLATION_FOLDER
-  patch -p1 < ../.patches/mva-scenario.patch
+  patch -p1 < ../.patches/ns3-mmwave-psc.patch
+
+  # Copy the example
+  cp ../psc-scenarios/mva-scenario.cc scratch/.
 
   # Configure the ns3-module
   ./waf configure --disable-python
@@ -56,7 +61,10 @@ elif [ $choice = 3 ]; then
 
   # Appy the patch
   cd $INSTALLATION_FOLDER
-  patch -p1 < ../.patches/high-school-shooting.patch
+  patch -p1 < ../.patches/ns3-mmwave-iab-psc.patch
+
+  # Copy the example
+  cp ../psc-scenarios/psc-shooting-swat.cc scratch/.
 
   # Configure the ns3-module
   ./waf configure --disable-python
