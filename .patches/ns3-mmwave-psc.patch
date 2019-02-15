@@ -1,0 +1,2330 @@
+diff -Naru '--exclude=.git' ns3-mmwave/scratch/simulation-config/ps-simulation-config.cc mmwave-psc/scratch/simulation-config/ps-simulation-config.cc
+--- ns3-mmwave/scratch/simulation-config/ps-simulation-config.cc	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/scratch/simulation-config/ps-simulation-config.cc	2019-02-15 18:12:45.771530526 +0100
+@@ -0,0 +1,29 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2019, University of Padova, Dep. of Information Engineering, SIGNET lab.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ */
++
++#include <scratch/simulation-config/ps-simulation-config.h>
++
++using namespace ns3;
++using namespace mmwave;
++
++int
++main (int argc, char *argv[])
++{
++  return 0;
++}
+diff -Naru '--exclude=.git' ns3-mmwave/scratch/simulation-config/ps-simulation-config.h mmwave-psc/scratch/simulation-config/ps-simulation-config.h
+--- ns3-mmwave/scratch/simulation-config/ps-simulation-config.h	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/scratch/simulation-config/ps-simulation-config.h	2019-02-15 18:12:45.771530526 +0100
+@@ -0,0 +1,736 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2019, University of Padova, Dep. of Information Engineering, SIGNET lab.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ */
++
++#include <ns3/core-module.h>
++#include <ns3/internet-module.h>
++#include <ns3/point-to-point-helper.h>
++#include <ns3/mobility-module.h>
++#include <ns3/applications-module.h>
++#include <ns3/buildings-module.h>
++#include <ns3/node-list.h>
++#include <ns3/lte-module.h>
++#include <ns3/mmwave-module.h>
++#include <ns3/trace-source-accessor.h>
++
++NS_LOG_COMPONENT_DEFINE ("PsSimulationConfig");
++
++namespace ns3{
++namespace mmwave{
++
++  class PsSimulationConfig
++  {
++    public:
++      static std::pair<Ptr<Node>, Ipv4Address> CreateInternet (Ptr<MmWavePointToPointEpcHelper> epcHelper);
++      static Ipv4InterfaceContainer InstallUeInternet (Ptr<MmWavePointToPointEpcHelper> epcHelper, NodeContainer ueNodes, NetDeviceContainer ueNetDevices);
++      static void SetConstantPositionMobility (NodeContainer nodes, Vector position);
++      static void SetConstantVelocityMobility (Ptr<Node> node, Vector position, Vector velocity);
++      static void SetupUplinkUdpFlow (Ptr<Node> source, Ptr<Node> sink, Ipv4Address sinkAddress, uint16_t port, Time interPacketInterval,
++                                      Time startTime, Time endTime, Ptr<OutputStreamWrapper> stream);
++      static void SetupUplinkUdpFlow (Ptr<Node> source, Ptr<Node> sink, Ipv4Address sinkAddress, uint16_t port, uint32_t interPacketInterval, uint32_t startTime, uint32_t endTime, Ptr<OutputStreamWrapper> stream);
++      static void SetupDedicatedBearer (Ptr<NetDevice> dev, uint16_t port, Ptr<MmWavePointToPointEpcHelper> epcHelper, EpsBearer::Qci qci);
++      static void SetupUdpApplication (Ptr<Node> node, Ipv4Address address, uint16_t port, Time interPacketInterval, Time startTime, Time endTime);
++      static void SetupUdpPacketSink (Ptr<Node> node, uint16_t port, Time startTime, Time endTime, Ptr<OutputStreamWrapper> stream);
++      static void SetTracesPath (std::string filePath);
++      static void CreateRandomObstacle (double streetLength, double streetWidth, double obstacleWidth, double obstacleLength, double obstacleHeight);
++      static void DropMmWaveRoadSideUnits (double xMin, double xMax, double y, double z, double interBsDistance, NodeContainer enbs);
++      static void DropMmWaveRandomUnits (NodeContainer bsNodes, double x, double y, double bsHeight, double forbiddenRadius, double minInterSiteDistance);
++      static void DropLteMacro (double lteMacroDistanceFromScenario, double zLteMacro, NodeContainer enbs);
++      static void DropFirstResponders (double xMin, double xMax, double yMin, double yMax, double zMin, double zMax, NodeContainer nodes);
++      static void DropWheelbarrowRobot (double xMin, double xMax, double yMin, double yMax, double zMin, double zMax, NodeContainer nodes);
++  };
++
++  class CallbackSinks
++  {
++    public:
++      static void RxSink (Ptr<OutputStreamWrapper> stream, Ptr<const Packet> packet, const Address &from = Address ());
++      static void TxSink (Ptr<OutputStreamWrapper> stream, Ptr<const Packet> packet, const Address &from = Address ());
++  };
++
++  class RandomBuildings
++  {
++    public:
++      static void CreateRandomBuildings (double streetWidth, double minBlockSize, double maxBlockSize, double maxXAxis, double maxYAxis, uint32_t numBlocks);
++
++    private:
++      static std::pair<Box, std::list<Box>> GenerateBuildingBounds(double xMin, double xMax, double yMin, double yMax, double minBuildingSize, double maxBuildSize, std::list<Box> m_previousBlocks );
++      static bool AreOverlapping(Box a, Box b);
++      static bool OverlapWithAnyPrevious(Box box, std::list<Box> m_previousBlocks);
++
++  };
++
++  class GridBuildings
++  {
++    public:
++      static std::vector< Ptr<Building> > CreateGridBuildings (int numBuildingsRow, int numBuildingsColumn, double streetWidth, double buildingWidthX, double buildingWidthY, double buildingHeight);
++  };
++
++  class PrintHelper
++  {
++    public:
++      static void PrintGnuplottableBuildingListToFile (std::string filename);
++      static void PrintGnuplottableNodeListToFile (std::string filename);
++      static void UpdateGnuplottableNodeListToFile (std::string filename, Ptr<Node> node);
++  };
++
++  std::pair<Ptr<Node>, Ipv4Address>
++  PsSimulationConfig::CreateInternet (Ptr<MmWavePointToPointEpcHelper> epcHelper)
++  {
++    // Create the Internet by connecting remoteHost to pgw. Setup routing too
++    Ptr<Node> pgw = epcHelper->GetPgwNode ();
++
++    // Create remotehost
++    NodeContainer remoteHostContainer;
++    remoteHostContainer.Create (1);
++    InternetStackHelper internet;
++    internet.Install (remoteHostContainer);
++    Ipv4StaticRoutingHelper ipv4RoutingHelper;
++    Ipv4InterfaceContainer internetIpIfaces;
++
++    Ptr<Node> remoteHost = remoteHostContainer.Get (0);
++    // Create the Internet
++    PointToPointHelper p2ph;
++    p2ph.SetDeviceAttribute ("DataRate", DataRateValue (DataRate ("100Gb/s")));
++    p2ph.SetDeviceAttribute ("Mtu", UintegerValue (1500));
++    p2ph.SetChannelAttribute ("Delay", TimeValue (Seconds (0.001)));
++
++    NetDeviceContainer internetDevices = p2ph.Install (pgw, remoteHost);
++
++    Ipv4AddressHelper ipv4h;
++    ipv4h.SetBase ("1.0.0.0", "255.255.0.0");
++    internetIpIfaces = ipv4h.Assign (internetDevices);
++    // interface 0 is localhost, 1 is the p2p device
++    Ipv4Address remoteHostAddr = internetIpIfaces.GetAddress (1);
++
++    Ptr<Ipv4StaticRouting> remoteHostStaticRouting = ipv4RoutingHelper.GetStaticRouting (remoteHost->GetObject<Ipv4> ());
++    remoteHostStaticRouting->AddNetworkRouteTo (Ipv4Address ("7.0.0.0"), Ipv4Mask ("255.255.0.0"), 1);
++
++    return std::pair<Ptr<Node>, Ipv4Address> (remoteHost, remoteHostAddr);
++  }
++
++  Ipv4InterfaceContainer
++  PsSimulationConfig::InstallUeInternet (Ptr<MmWavePointToPointEpcHelper> epcHelper, NodeContainer ueNodes, NetDeviceContainer ueNetDevices)
++  {
++    // Install the IP stack on the UEs
++    InternetStackHelper internet;
++    internet.Install (ueNodes);
++    Ipv4InterfaceContainer ueIpIface;
++    ueIpIface = epcHelper->AssignUeIpv4Address (ueNetDevices);
++    // Assign IP address to UEs, and install applications
++    // Set the default gateway for the UE
++    Ipv4StaticRoutingHelper ipv4RoutingHelper;
++
++    for (uint32_t i = 0; i < ueNodes.GetN (); i++)
++    {
++      Ptr<Ipv4StaticRouting> ueStaticRouting = ipv4RoutingHelper.GetStaticRouting (ueNodes.Get (i)->GetObject<Ipv4> ());
++      ueStaticRouting->SetDefaultRoute (epcHelper->GetUeDefaultGatewayAddress (), 1);
++    }
++
++    return ueIpIface;
++  }
++
++  void
++  PsSimulationConfig::SetConstantPositionMobility (NodeContainer nodes, Vector position)
++  {
++    Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
++    positionAlloc->Add (position);
++    MobilityHelper mobility;
++    mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
++    mobility.SetPositionAllocator(positionAlloc);
++    mobility.Install (nodes);
++    BuildingsHelper::Install (nodes);
++  }
++
++  void
++  PsSimulationConfig::SetConstantVelocityMobility (Ptr<Node> node, Vector position, Vector velocity)
++  {
++    Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
++    MobilityHelper mobility;
++    positionAlloc->Add (position);
++    mobility.SetMobilityModel ("ns3::ConstantVelocityMobilityModel");
++    mobility.SetPositionAllocator(positionAlloc);
++    mobility.Install (node);
++    node->GetObject<ConstantVelocityMobilityModel> ()->SetVelocity (velocity);
++    BuildingsHelper::Install (node);
++  }
++
++  void
++  PsSimulationConfig::SetupDedicatedBearer (Ptr<NetDevice> dev, uint16_t port, Ptr<MmWavePointToPointEpcHelper> epcHelper, EpsBearer::Qci qci)
++  {
++    EpcTft::PacketFilter packetFilter; // Create a new tft packet filter
++    // TODO what to do for remote ports?
++    packetFilter.localPortStart = port; // Set the filter policies
++    packetFilter.localPortEnd = port;
++    Ptr<EpcTft> tft = Create<EpcTft> (); // Create a new tft
++    tft->Add (packetFilter); // Add the packet filter
++
++    Ptr<MmWaveUeNetDevice> mmWaveUeNeDev = DynamicCast<MmWaveUeNetDevice> (dev);
++    Ptr<McUeNetDevice> mmWaveMcUeNetDev = DynamicCast<McUeNetDevice> (dev);
++
++    if (mmWaveUeNeDev)
++    {
++      epcHelper->ActivateEpsBearer (dev, mmWaveUeNeDev->GetImsi (), tft, EpsBearer (qci)); // Activate the bearer
++    }
++    else if (mmWaveMcUeNetDev)
++    {
++      epcHelper->ActivateEpsBearer (dev, mmWaveMcUeNetDev->GetImsi (), tft, EpsBearer (qci)); // Activate the bearer
++    }
++    else
++    {
++      NS_FATAL_ERROR ("Unknown net device");
++    }
++    // All the packets that match the filter rule will be sent using this bearer.
++  }
++
++  void
++  PsSimulationConfig::SetupUplinkUdpFlow (Ptr<Node> source, Ptr<Node> sink, Ipv4Address sinkAddress, uint16_t port, Time interPacketInterval, Time startTime, Time endTime, Ptr<OutputStreamWrapper> stream)
++  {
++    SetupUdpApplication (source, sinkAddress, port, interPacketInterval, startTime, endTime);
++    SetupUdpPacketSink (sink, port, startTime, endTime, stream);
++  }
++
++  void
++  PsSimulationConfig::SetupUplinkUdpFlow (Ptr<Node> source, Ptr<Node> sink, Ipv4Address sinkAddress, uint16_t port, uint32_t interPacketInterval, uint32_t startTime, uint32_t endTime, Ptr<OutputStreamWrapper> stream)
++  {
++    NS_FATAL_ERROR ("Use the other method!");
++  }
++
++  void
++  PsSimulationConfig::SetupUdpApplication (Ptr<Node> node, Ipv4Address address, uint16_t port, Time interPacketInterval, Time startTime, Time endTime)
++  {
++    ApplicationContainer app;
++    UdpClientHelper client (address, port);
++    client.SetAttribute ("Interval", TimeValue (interPacketInterval));
++    client.SetAttribute ("MaxPackets", UintegerValue(0xFFFFFFFF));
++
++    app.Add (client.Install (node));
++    app.Start (startTime);
++    app.Stop (endTime);
++
++    NS_LOG_INFO ("Number of packets to send " << std::floor((endTime.GetSeconds ()-startTime.GetSeconds ()) / interPacketInterval.GetSeconds ()));
++  }
++
++  void
++  PsSimulationConfig::SetupUdpPacketSink (Ptr<Node> node, uint16_t port, Time startTime, Time endTime, Ptr<OutputStreamWrapper> stream)
++  {
++    ApplicationContainer app;
++    PacketSinkHelper packetSinkHelper ("ns3::UdpSocketFactory", InetSocketAddress (Ipv4Address::GetAny (), port));
++    app.Add (packetSinkHelper.Install (node));
++    app.Start (startTime);
++    app.Stop (endTime);
++
++    app.Get(0)->TraceConnectWithoutContext("Rx", MakeBoundCallback (&CallbackSinks::RxSink, stream));
++  }
++
++  void
++  PsSimulationConfig::SetTracesPath (std::string filePath)
++  {
++    Config::SetDefault("ns3::MmWaveBearerStatsCalculator::DlRlcOutputFilename", StringValue(filePath + "DlRlcStats.txt"));
++    Config::SetDefault("ns3::MmWaveBearerStatsCalculator::UlRlcOutputFilename", StringValue(filePath + "UlRlcStats.txt"));
++    Config::SetDefault("ns3::MmWaveBearerStatsCalculator::DlPdcpOutputFilename", StringValue(filePath + "DlPdcpStats.txt"));
++    Config::SetDefault("ns3::MmWaveBearerStatsCalculator::UlPdcpOutputFilename", StringValue(filePath + "UlPdcpStats.txt"));
++    Config::SetDefault("ns3::MmWavePhyRxTrace::OutputFilename", StringValue(filePath + "RxPacketTrace.txt"));
++    Config::SetDefault("ns3::LteRlcAm::BufferSizeFilename", StringValue(filePath + "RlcAmBufferSize.txt"));
++  }
++
++  void
++  PsSimulationConfig::CreateRandomObstacle (double streetLength, double streetWidth, double obstacleWidth, double obstacleLength, double obstacleHeight)
++  {
++    NS_ASSERT_MSG (obstacleWidth <= obstacleLength, "Width has to be smaller or equal than length");
++
++    // choose a random orientation for the obstacle
++    // true = landscape, false = potrait
++    Ptr<UniformRandomVariable> rnd = CreateObject<UniformRandomVariable> ();
++    rnd->SetAttribute ("Min", DoubleValue (0.0));
++    rnd->SetAttribute ("Max", DoubleValue (1.0));
++    bool orientation = (rnd->GetValue () > 0.5);
++
++    // choose randomly the position of the obstacle
++    Ptr<UniformRandomVariable> x = CreateObject<UniformRandomVariable> ();
++    Ptr<UniformRandomVariable> y = CreateObject<UniformRandomVariable> ();
++    Box box;
++
++    if (orientation)
++    {
++      // landscape
++      // |
++      // |       width
++      // |     ------------
++      // |     |          | length
++      // |     ------------
++      // |
++      x->SetAttribute ("Max", DoubleValue (streetWidth - obstacleWidth));
++      y->SetAttribute ("Max", DoubleValue (streetLength - obstacleLength));
++      box.xMin = x->GetValue ();
++      box.xMax = box.xMin + obstacleWidth;
++      box.yMin = y->GetValue ();
++      box.yMax = box.yMin + obstacleLength;
++
++      NS_LOG_INFO ("Landscape orientation, x = " << box.xMin << ":" << box.xMax << ", y = " << box.yMin << ":" << box.yMax);
++    }
++    else
++    {
++      // potrait
++      // |
++      // |     length
++      // |     -----
++      // |     |   |
++      // |     |   | width
++      // |     |   |
++      // |     -----
++      // |
++      x->SetAttribute ("Max", DoubleValue (streetWidth - obstacleLength));
++      y->SetAttribute ("Max", DoubleValue (streetLength - obstacleWidth));
++      box.xMin = x->GetValue ();
++      box.xMax = box.xMin + obstacleLength;
++      box.yMin = y->GetValue ();
++      box.yMax = box.yMin + obstacleWidth;
++
++      NS_LOG_INFO ("Potrait orientation, x = " << box.xMin << ":" << box.xMax << ", y = " << box.yMin << ":" << box.yMax);
++    }
++
++    // set the obstacle height
++    box.zMax = obstacleHeight;
++
++    // create an instance of the Building class which represents the obstacle
++    Ptr<Building> obstacle = Create<Building> ();
++    obstacle->SetBoundaries (box);
++    obstacle->SetNRoomsX(1);
++    obstacle->SetNRoomsY(1);
++    obstacle->SetNFloors(1);
++  }
++
++  void
++  PsSimulationConfig::DropMmWaveRoadSideUnits(double yMin, double yMax, double x, double z, double interBsDistance, NodeContainer enbs)
++  {
++    NS_ASSERT_MSG(yMin + interBsDistance * enbs.GetN() < yMax + interBsDistance, "Cannot fit the enbs in this space");
++
++    // get a first random coordinate (i.e., offset with respect to xMin)
++    Ptr<UniformRandomVariable> rnd = CreateObject<UniformRandomVariable> ();
++    rnd->SetAttribute ("Min", DoubleValue (yMin));
++    rnd->SetAttribute ("Max", DoubleValue (yMin + interBsDistance));
++
++    double yBs = rnd->GetValue();
++
++    for(auto enb = enbs.Begin(); enb != enbs.End(); ++enb)
++    {
++      Vector position = Vector(x, yBs, z);
++      SetConstantPositionMobility(NodeContainer((*enb)), position);
++      yBs += interBsDistance;
++    }
++  }
++
++  void
++  PsSimulationConfig::DropMmWaveRandomUnits (NodeContainer bsNodes, double x, double y, double bsHeight, double forbiddenRadius, double minInterSiteDistance)
++  {
++    // deploy the mmwave bs outdoor and randomly within the site area but
++    // outside the incident area and with a minimum intersite distance
++
++    Ptr<OutdoorPositionAllocator> pa = CreateObject<OutdoorPositionAllocator> ();
++    Ptr<UniformRandomVariable> xBs = CreateObject<UniformRandomVariable>();
++    xBs->SetAttribute("Min", DoubleValue(0.0));
++    xBs->SetAttribute("Max", DoubleValue(x));
++    pa->SetX(xBs);
++
++    Ptr<UniformRandomVariable> yBs = CreateObject<UniformRandomVariable>();
++    yBs->SetAttribute("Min", DoubleValue(0.0));
++    yBs->SetAttribute("Max", DoubleValue(y));
++    pa->SetY(yBs);
++
++    Ptr<UniformRandomVariable> zBs = CreateObject<UniformRandomVariable>();
++    zBs->SetAttribute("Min", DoubleValue(bsHeight));
++    zBs->SetAttribute("Max", DoubleValue(bsHeight));
++    pa->SetZ(zBs);
++
++    for (uint16_t i = 0; i < bsNodes.GetN (); i++)
++    {
++      Vector pos;
++      bool exit_condition;
++      do
++      {
++        pos = pa->GetNext ();
++        NS_LOG_DEBUG ("Trying position " << pos);
++
++        exit_condition = true;
++        // check if the position is inside the incident area
++        if ((pos.x - x)*(pos.x - x) + (pos.y - y)*(pos.y - y) < forbiddenRadius*forbiddenRadius)
++        {
++          NS_LOG_DEBUG ("The position is inside the incident area, try another position");
++          exit_condition = false;
++        }
++
++        // check if the position if too close to another bs
++        for (uint16_t bsIndex = 0; bsIndex < bsNodes.GetN (); bsIndex++)
++        {
++          if (bsNodes.Get (bsIndex)->GetObject<MobilityModel> ())
++          {
++            Vector otheBsPos = bsNodes.Get (bsIndex)->GetObject<MobilityModel> ()->GetPosition ();
++            if ((pos.x - otheBsPos.x) * (pos.x - otheBsPos.x) + (pos.y - otheBsPos.y) * (pos.y - otheBsPos.y) < minInterSiteDistance * minInterSiteDistance)
++            {
++              NS_LOG_DEBUG ("The position is too close to another bs, try another position");
++              exit_condition = false;
++              break;
++            }
++          }
++        }
++      }
++      while (!exit_condition);
++
++      SetConstantPositionMobility (bsNodes.Get (i), pos);
++    }
++
++  }
++
++
++  void
++  PsSimulationConfig::DropLteMacro (double lteMacroDistanceFromScenario, double zLteMacro, NodeContainer enbs)
++  {
++    Ptr<UniformRandomVariable> phi = CreateObject<UniformRandomVariable> ();
++    phi->SetAttribute("Min", DoubleValue(0));
++    phi->SetAttribute("Max", DoubleValue(2 * M_PI));
++
++    for(auto enb = enbs.Begin(); enb != enbs.End(); ++enb)
++    {
++      double randomAngle = phi->GetValue();
++      double xLte = lteMacroDistanceFromScenario * std::cos(randomAngle);
++      double yLte = lteMacroDistanceFromScenario * std::sin(randomAngle);
++      Vector position = Vector(xLte, yLte, zLteMacro);
++      SetConstantPositionMobility(NodeContainer((*enb)), position);
++    }
++  }
++
++  void
++  PsSimulationConfig::DropFirstResponders (double xMin, double xMax, double yMin, double yMax, double zMin, double zMax, NodeContainer nodes)
++  {
++    MobilityHelper mobility;
++    mobility.SetMobilityModel ("ns3::RandomWalk2dOutdoorMobilityModel",
++                               "Bounds", RectangleValue (Rectangle (xMin, xMax, yMin, yMax)));
++    Ptr<OutdoorPositionAllocator> position = CreateObject<OutdoorPositionAllocator>();
++    Ptr<UniformRandomVariable> xUe = CreateObject<UniformRandomVariable>();
++    xUe->SetAttribute("Min", DoubleValue(xMin));
++    xUe->SetAttribute("Max", DoubleValue(xMax));
++    position->SetX(xUe);
++    Ptr<UniformRandomVariable> yUe = CreateObject<UniformRandomVariable>();
++    yUe->SetAttribute("Min", DoubleValue(yMin));
++    yUe->SetAttribute("Max", DoubleValue(yMax));
++    position->SetY(yUe);
++    Ptr<UniformRandomVariable> zUe = CreateObject<UniformRandomVariable>();
++    zUe->SetAttribute("Min", DoubleValue(zMin));
++    zUe->SetAttribute("Max", DoubleValue(zMax));
++    position->SetZ(zUe);
++    mobility.SetPositionAllocator(position);
++    mobility.Install (nodes);
++    BuildingsHelper::Install (nodes);
++  }
++
++  void
++  PsSimulationConfig::DropWheelbarrowRobot (double xMin, double xMax, double yMin, double yMax, double zMin, double zMax, NodeContainer nodes)
++  {
++    MobilityHelper mobility;
++    mobility.SetMobilityModel ("ns3::RandomWalk2dOutdoorMobilityModel",
++                               "Bounds", RectangleValue (Rectangle (xMin, xMax, yMin, yMax)));
++    Ptr<OutdoorPositionAllocator> position = CreateObject<OutdoorPositionAllocator>();
++    Ptr<UniformRandomVariable> xUe = CreateObject<UniformRandomVariable>();
++    xUe->SetAttribute("Min", DoubleValue(xMin));
++    xUe->SetAttribute("Max", DoubleValue(xMax));
++    position->SetX(xUe);
++    Ptr<UniformRandomVariable> yUe = CreateObject<UniformRandomVariable>();
++    yUe->SetAttribute("Min", DoubleValue(yMin));
++    yUe->SetAttribute("Max", DoubleValue(yMax));
++    position->SetY(yUe);
++    Ptr<UniformRandomVariable> zUe = CreateObject<UniformRandomVariable>();
++    zUe->SetAttribute("Min", DoubleValue(zMin));
++    zUe->SetAttribute("Max", DoubleValue(zMax));
++    position->SetZ(zUe);
++    mobility.SetPositionAllocator(position);
++    mobility.Install (nodes);
++    BuildingsHelper::Install (nodes);
++  }
++
++  void
++  RandomBuildings::CreateRandomBuildings (double streetWidth, double minBlockSize, double maxBlockSize, double maxXAxis, double maxYAxis, uint32_t numBlocks)
++  {
++    /* Create the building */
++  	 double maxObstacleSize = maxBlockSize - streetWidth;
++
++  	 std::vector<Ptr<Building> > buildingVector;
++  	 std::list<Box>  m_previousBlocks;
++
++  	 for(uint32_t buildingIndex = 0; buildingIndex < numBlocks; buildingIndex++)
++  	 {
++  		 Ptr < Building > building;
++  		 building = Create<Building> ();
++  		 /* returns a vecotr where:
++  		 * position [0]: coordinates for x min
++  		 * position [1]: coordinates for x max
++  		 * position [2]: coordinates for y min
++  		 * position [3]: coordinates for y max
++  		 */
++
++  		 std::pair<Box, std::list<Box>> pairBuildings = RandomBuildings::GenerateBuildingBounds(0, maxXAxis-maxObstacleSize, 0, maxYAxis-maxObstacleSize, minBlockSize, maxObstacleSize, m_previousBlocks);
++  		 m_previousBlocks = std::get<1>(pairBuildings);
++  	 	 Box box = std::get<0>(pairBuildings);
++
++  		 Ptr<UniformRandomVariable> randomBuildingZ = CreateObject<UniformRandomVariable>();
++  		 randomBuildingZ->SetAttribute("Min",DoubleValue(1.6));
++  		 randomBuildingZ->SetAttribute("Max",DoubleValue(50));
++  		 double buildingHeight = randomBuildingZ->GetValue();
++       NS_LOG_INFO ("Building height " << buildingHeight << "\n");
++
++  		 building->SetBoundaries (Box(box.xMin, box.xMax,
++  																	 box.yMin,  box.yMax,
++  																	 0.0, buildingHeight));
++
++  		 building->SetNRoomsX(1);
++  		 building->SetNRoomsY(1);
++  		 building->SetNFloors(1);
++  		 buildingVector.push_back(building);
++  	 }
++  		/* END Create the building */
++  }
++
++  std::vector< Ptr<Building> >
++  GridBuildings::CreateGridBuildings (
++    int numBuildingsRow,
++    int numBuildingsColumn,
++    double streetWidth,
++    double buildingWidthX,
++    double buildingWidthY,
++    double buildingHeight)
++  {
++    std::vector< Ptr<Building> > buildingVector; // in case you need to access the buildings later
++
++    for (int rowIndex = 0; rowIndex < numBuildingsRow; ++rowIndex)
++    {
++      double minYBuilding = rowIndex*(buildingWidthY + streetWidth);
++      for (int colIndex = 0; colIndex < numBuildingsColumn; ++colIndex)
++      {
++        double minXBuilding = colIndex*(buildingWidthX + streetWidth);
++        Ptr <Building> building;
++        building = Create<Building> ();
++        building->SetBoundaries (Box( minXBuilding, minXBuilding + buildingWidthX,
++                                      minYBuilding, minYBuilding + buildingWidthY,
++                                      0.0, buildingHeight));
++        building->SetNRoomsX(1);
++        building->SetNRoomsY(1);
++        building->SetNFloors(1);
++
++        buildingVector.push_back(building);
++        Box buildingBoxForLog = building->GetBoundaries();
++        NS_LOG_INFO("Created building between coordinates ("
++          << buildingBoxForLog.xMin << ", " << buildingBoxForLog.yMin << "), ("
++          << buildingBoxForLog.xMax << ", " << buildingBoxForLog.yMin << "), ("
++          << buildingBoxForLog.xMin << ", " << buildingBoxForLog.yMax << "), ("
++          << buildingBoxForLog.xMax << ", " << buildingBoxForLog.yMax << ") "
++          << "with height " << buildingBoxForLog.zMax - buildingBoxForLog.zMin << " m");
++      }
++    }
++
++    return buildingVector;
++  }
++
++  void
++  CallbackSinks::RxSink (Ptr<OutputStreamWrapper> stream, Ptr<const Packet> packet, const Address &from)
++  {
++    *stream->GetStream () << "Rx\t" << Simulator::Now ().GetSeconds () << "\t" << packet->GetSize() << std::endl;
++  }
++
++  void
++  CallbackSinks::TxSink (Ptr<OutputStreamWrapper> stream, Ptr<const Packet> packet, const Address &from)
++  {
++    *stream->GetStream () << "Tx\t" << Simulator::Now ().GetSeconds () << "\t" << packet->GetSize() << std::endl;
++  }
++
++  std::pair<Box, std::list<Box>>
++  RandomBuildings::GenerateBuildingBounds(double xMin, double xMax, double yMin, double yMax, double minBuildingSize, double maxBuildSize, std::list<Box> m_previousBlocks )
++  {
++
++    Ptr<UniformRandomVariable> xMinBuilding = CreateObject<UniformRandomVariable>();
++    xMinBuilding->SetAttribute("Min",DoubleValue(xMin));
++    xMinBuilding->SetAttribute("Max",DoubleValue(xMax-minBuildingSize));
++
++    Ptr<UniformRandomVariable> yMinBuilding = CreateObject<UniformRandomVariable>();
++    yMinBuilding->SetAttribute("Min",DoubleValue(yMin));
++    yMinBuilding->SetAttribute("Max",DoubleValue(yMax-minBuildingSize));
++
++    Box box;
++    uint32_t attempt = 0;
++    do
++    {
++      NS_ASSERT_MSG(attempt < 100, "Too many failed attempts to position non-overlapping buildings. Maybe area too small or too many buildings?");
++      box.xMin = xMinBuilding->GetValue();
++
++      Ptr<UniformRandomVariable> xMaxBuilding = CreateObject<UniformRandomVariable>();
++      xMaxBuilding->SetAttribute("Min",DoubleValue(box.xMin + minBuildingSize));
++      xMaxBuilding->SetAttribute("Max",DoubleValue(box.xMin + maxBuildSize));
++      box.xMax = xMaxBuilding->GetValue();
++
++      box.yMin = yMinBuilding->GetValue();
++
++      Ptr<UniformRandomVariable> yMaxBuilding = CreateObject<UniformRandomVariable>();
++      yMaxBuilding->SetAttribute("Min",DoubleValue(box.yMin + minBuildingSize));
++      yMaxBuilding->SetAttribute("Max",DoubleValue(box.yMin + maxBuildSize));
++      box.yMax = yMaxBuilding->GetValue();
++
++      ++attempt;
++    }
++    while (OverlapWithAnyPrevious (box, m_previousBlocks));
++
++
++    NS_LOG_INFO("Building in coordinates (" << box.xMin << " , " << box.yMin << ") and ("  << box.xMax << " , " << box.yMax <<
++      ") accepted after " << attempt << " attempts");
++    m_previousBlocks.push_back(box);
++    std::pair<Box, std::list<Box>> pairReturn = std::make_pair(box,m_previousBlocks);
++    return pairReturn;
++  }
++
++  bool
++  RandomBuildings::AreOverlapping(Box a, Box b)
++  {
++    return !((a.xMin > b.xMax) || (b.xMin > a.xMax) || (a.yMin > b.yMax) || (b.yMin > a.yMax) );
++  }
++
++  bool
++  RandomBuildings::OverlapWithAnyPrevious(Box box, std::list<Box> m_previousBlocks)
++  {
++    for (std::list<Box>::iterator it = m_previousBlocks.begin(); it != m_previousBlocks.end(); ++it)
++    {
++      if (AreOverlapping(*it,box))
++      {
++        return true;
++      }
++    }
++    return false;
++  }
++
++  void
++  PrintHelper::PrintGnuplottableBuildingListToFile (std::string filename)
++  {
++    std::ofstream outFile;
++    outFile.open (filename.c_str (), std::ios_base::out | std::ios_base::trunc);
++    if (!outFile.is_open ())
++      {
++        NS_LOG_ERROR ("Can't open file " << filename);
++        return;
++      }
++
++  	//outFile << "set xrange [0:100]" << std::endl;
++  	//outFile << "set yrange [0:100]" << std::endl;
++  	outFile << "unset key" << std::endl;
++  	outFile << "set grid" << std::endl;
++
++    uint32_t index = 0;
++    for (BuildingList::Iterator it = BuildingList::Begin (); it != BuildingList::End (); ++it)
++      {
++        ++index;
++        Box box = (*it)->GetBoundaries ();
++        outFile << "set object " << index
++                << " rect from " << box.xMin  << "," << box.yMin
++                << " to "   << box.xMax  << "," << box.yMax
++                //<< " height " << box.zMin << "," << box.zMax
++                << " front fs empty "
++                << std::endl;
++      }
++  }
++
++  void
++  PrintHelper::PrintGnuplottableNodeListToFile (std::string filename)
++  {
++    std::ofstream outFile;
++    outFile.open (filename.c_str (), std::ios_base::out | std::ios_base::trunc);
++    if (!outFile.is_open ())
++      {
++        NS_LOG_ERROR ("Can't open file " << filename);
++        return;
++      }
++    for (NodeList::Iterator it = NodeList::Begin (); it != NodeList::End (); ++it)
++      {
++        Ptr<Node> node = *it;
++        int nDevs = node->GetNDevices ();
++        for (int j = 0; j < nDevs; j++)
++          {
++            Ptr<LteUeNetDevice> uedev = node->GetDevice (j)->GetObject <LteUeNetDevice> ();
++            Ptr<MmWaveUeNetDevice> mmuedev = node->GetDevice (j)->GetObject <MmWaveUeNetDevice> ();
++            Ptr<McUeNetDevice> mcuedev = node->GetDevice (j)->GetObject <McUeNetDevice> ();
++            Ptr<LteEnbNetDevice> enbdev = node->GetDevice (j)->GetObject <LteEnbNetDevice> ();
++            Ptr<MmWaveEnbNetDevice> mmenbdev = node->GetDevice (j)->GetObject <MmWaveEnbNetDevice> ();
++            if (uedev)
++              {
++                Vector pos = node->GetObject<MobilityModel> ()->GetPosition ();
++                outFile << "set label \"" << uedev->GetImsi ()
++                        << "\" at "<< pos.x << "," << pos.y << " left font \"Helvetica,8\" textcolor rgb \"black\" front point pt 7 ps 0.3 lc rgb \"black\" offset 0,0"
++                        << std::endl;
++
++                Simulator::Schedule (Seconds (1), &PrintHelper::UpdateGnuplottableNodeListToFile, filename, node);
++              }
++            else if (mmuedev)
++             {
++                Vector pos = node->GetObject<MobilityModel> ()->GetPosition ();
++                outFile << "set label \"" << mmuedev->GetImsi ()
++                        << "\" at "<< pos.x << "," << pos.y << " left font \"Helvetica,8\" textcolor rgb \"black\" front point pt 7 ps 0.3 lc rgb \"black\" offset 0,0"
++                        << std::endl;
++
++                Simulator::Schedule (Seconds (1), &PrintHelper::UpdateGnuplottableNodeListToFile, filename, node);
++              }
++            else if (mcuedev)
++             {
++                Vector pos = node->GetObject<MobilityModel> ()->GetPosition ();
++                outFile << "set label \"" << mcuedev->GetImsi ()
++                        << "\" at "<< pos.x << "," << pos.y << " left font \"Helvetica,8\" textcolor rgb \"black\" front point pt 7 ps 0.3 lc rgb \"black\" offset 0,0"
++                        << std::endl;
++
++                Simulator::Schedule (Seconds (1), &PrintHelper::UpdateGnuplottableNodeListToFile, filename, node);
++              }
++            else if (enbdev)
++              {
++                 Vector pos = node->GetObject<MobilityModel> ()->GetPosition ();
++                 outFile << "set label \"" << enbdev->GetCellId ()
++                         << "\" at "<< pos.x << "," << pos.y << " left font \"Helvetica,8\" textcolor rgb \"red\" front point pt 5 ps 0.8 lc rgb \"red\" offset 0,0"
++                         << std::endl;
++               }
++            else if (mmenbdev)
++              {
++                 Vector pos = node->GetObject<MobilityModel> ()->GetPosition ();
++                 outFile << "set label \"" << mmenbdev->GetCellId ()
++                         << "\" at "<< pos.x << "," << pos.y << " left font \"Helvetica,8\" textcolor rgb \"blue\" front point pt 5 ps 0.8 lc rgb \"blue\" offset 0,0"
++                         << std::endl;
++               }
++          }
++      }
++  }
++
++  void
++  PrintHelper::UpdateGnuplottableNodeListToFile (std::string filename, Ptr<Node> node)
++  {
++    std::ofstream outFile;
++    outFile.open (filename.c_str (), std::ios_base::app);
++    if (!outFile.is_open ())
++      {
++        NS_LOG_ERROR ("Can't open file " << filename);
++        return;
++      }
++    Vector pos = node->GetObject<MobilityModel> ()->GetPosition ();
++    outFile << "set label \""
++            << "\" at "<< pos.x << "," << pos.y << " left font \"Helvetica,8\" textcolor rgb \"black\" front point pt 1 ps 0.3 lc rgb \"black\" offset 0,0"
++            << std::endl;
++
++    Simulator::Schedule (Seconds (1), &PrintHelper::UpdateGnuplottableNodeListToFile, filename, node);
++  }
++
++} // end namespace mmwave
++} // end namespace ns3
+diff -Naru '--exclude=.git' ns3-mmwave/scripts/read_traces.pl mmwave-psc/scripts/read_traces.pl
+--- ns3-mmwave/scripts/read_traces.pl	2019-02-15 18:12:26.187355319 +0100
++++ mmwave-psc/scripts/read_traces.pl	2019-02-15 18:12:45.771530526 +0100
+@@ -407,14 +407,14 @@
+   my $averageDelay=0; # average delay in nanoseconds
+ 
+   my $row; # find the first received data packet
+-  my($mode, $time, $cellId, $rnti, $lcid, $size, $delay);
++  my($time, $cellId, $rnti, $imsi, $lcid, $size, $delay);
+   do
+   {
+     $row=<$fh>;
+     chomp $row; # this removes the EOL character
+-    ($mode, $time, $cellId, $rnti, $lcid, $size, $delay) = split(' ',$row); # this splits the arguments
++    ($time, $cellId, $rnti, $imsi, $lcid, $size, $delay) = split(' ',$row); # this splits the arguments
+   }
+-  while($row && !($mode eq 'Rx' && $lcid>2)); # exit if mode=Rx and it is a data packet
++  while($row && !($lcid>2)); # exit if mode=Rx and it is a data packet
+                                               # or if there are no more packets
+ 
+   my $numOfRxpackets=0; # this counts the total number of packets
+@@ -446,13 +446,13 @@
+           if ($row) # this is used to avoid the warning at the last iteration
+           {
+             chomp $row;
+-            ($mode, $time, $cellId, $rnti, $lcid, $size, $delay) = split(' ',$row); # this splits the arguments
++            ($time, $cellId, $rnti, $imsi, $lcid, $size, $delay) = split(' ',$row); # this splits the arguments
+                                                                                        # this returns a warning at the last
+                                                                                        # iteration because we are splitting an
+                                                                                        # undef value
+           }
+         }
+-        while($row && !($mode eq 'Rx' && $lcid>2)); # exit if mode=Rx and it is a data packet
++        while($row && !($lcid>2)); # exit if mode=Rx and it is a data packet
+                                                     # or if there are no more packets
+       }
+   }
+diff -Naru '--exclude=.git' ns3-mmwave/src/buildings/model/group-slave-outdoor-mobility-model.cc mmwave-psc/src/buildings/model/group-slave-outdoor-mobility-model.cc
+--- ns3-mmwave/src/buildings/model/group-slave-outdoor-mobility-model.cc	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/src/buildings/model/group-slave-outdoor-mobility-model.cc	2019-02-15 18:12:45.799530777 +0100
+@@ -0,0 +1,61 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2019 University of Padova
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ * Author: Michele Polese <michele.polese@gmail.com>
++ */
++#include "group-slave-outdoor-mobility-model.h"
++#include "ns3/log.h"
++#include "ns3/node.h"
++#include "ns3/building.h"
++#include "ns3/building-list.h"
++
++namespace ns3 {
++
++NS_OBJECT_ENSURE_REGISTERED (GroupSlaveOutdoorMobilityModel);
++NS_LOG_COMPONENT_DEFINE ("GroupSlaveOutdoorMobilityModel");
++
++TypeId
++GroupSlaveOutdoorMobilityModel::GetTypeId (void)
++{
++  static TypeId tid = TypeId ("ns3::GroupSlaveOutdoorMobilityModel")
++    .SetParent<GroupSlaveMobilityModel> ()
++    .SetGroupName ("Mobility")
++    .AddConstructor<GroupSlaveOutdoorMobilityModel> ();
++  return tid;
++}
++
++bool
++GroupSlaveOutdoorMobilityModel::CheckForSpecialConditions (Vector position) const
++{
++  return IsOutdoor (position);
++}
++
++bool
++GroupSlaveOutdoorMobilityModel::IsOutdoor (Vector position) const
++{
++  for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
++    {
++      if ((*bit)->IsInside (position)) // the position is inside a building
++        {
++          NS_LOG_LOGIC ("Indoor");
++          return false;
++        }
++    }
++  return true;
++}
++
++}
+\ Manca newline alla fine del file
+diff -Naru '--exclude=.git' ns3-mmwave/src/buildings/model/group-slave-outdoor-mobility-model.h mmwave-psc/src/buildings/model/group-slave-outdoor-mobility-model.h
+--- ns3-mmwave/src/buildings/model/group-slave-outdoor-mobility-model.h	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/src/buildings/model/group-slave-outdoor-mobility-model.h	2019-02-15 18:12:45.799530777 +0100
+@@ -0,0 +1,51 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2019 University of Padova
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ * Author: Michele Polese <michele.polese@gmail.com>
++ */
++#ifndef GROUP_SLAVE_OUTDOOR_MOBILITY_MODEL_H
++#define GROUP_SLAVE_OUTDOOR_MOBILITY_MODEL_H
++
++#include "ns3/group-slave-mobility-model.h"
++
++namespace ns3 {
++
++/**
++ * \ingroup buildings
++ *
++ * \brief MobilityModel which inherits GroupSlaveMobilityModel but also checks if the position of the slave is outdoor
++ */
++class GroupSlaveOutdoorMobilityModel : public GroupSlaveMobilityModel
++{
++public:
++  static TypeId GetTypeId (void);
++
++protected:
++  virtual bool CheckForSpecialConditions (Vector position) const;
++
++private:
++  /**
++   * Check if a position is indoor or not
++   * \param position a Vector with the position
++   * \return true if outdoor
++   */
++  bool IsOutdoor (Vector position) const;
++};
++
++} // namespace ns3
++
++#endif /* GROUP_SLAVE_OUTDOOR_MOBILITY_MODEL_H */
+diff -Naru '--exclude=.git' ns3-mmwave/src/buildings/model/random-walk-2d-outdoor-mobility-model.cc mmwave-psc/src/buildings/model/random-walk-2d-outdoor-mobility-model.cc
+--- ns3-mmwave/src/buildings/model/random-walk-2d-outdoor-mobility-model.cc	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/src/buildings/model/random-walk-2d-outdoor-mobility-model.cc	2019-02-15 18:12:45.799530777 +0100
+@@ -0,0 +1,401 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2006,2007 INRIA
++ * Copyright (c) 2019 University of Padova
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
++ * Author: Michele Polese <michele.polese@gmail.com>
++ */
++#include "random-walk-2d-outdoor-mobility-model.h"
++#include "ns3/enum.h"
++#include "ns3/double.h"
++#include "ns3/string.h"
++#include "ns3/pointer.h"
++#include "ns3/simulator.h"
++#include "ns3/log.h"
++#include "ns3/building.h"
++#include "ns3/building-list.h"
++#include <cmath>
++
++namespace ns3 {
++
++NS_LOG_COMPONENT_DEFINE ("RandomWalk2dOutdoor");
++
++NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dOutdoorMobilityModel);
++
++TypeId
++RandomWalk2dOutdoorMobilityModel::GetTypeId (void)
++{
++  static TypeId tid = TypeId ("ns3::RandomWalk2dOutdoorMobilityModel")
++    .SetParent<MobilityModel> ()
++    .SetGroupName ("Mobility")
++    .AddConstructor<RandomWalk2dOutdoorMobilityModel> ()
++    .AddAttribute ("Bounds",
++                   "Bounds of the area to cruise.",
++                   RectangleValue (Rectangle (0.0, 100.0, 0.0, 100.0)),
++                   MakeRectangleAccessor (&RandomWalk2dOutdoorMobilityModel::m_bounds),
++                   MakeRectangleChecker ())
++    .AddAttribute ("Time",
++                   "Change current direction and speed after moving for this delay.",
++                   TimeValue (Seconds (1.0)),
++                   MakeTimeAccessor (&RandomWalk2dOutdoorMobilityModel::m_modeTime),
++                   MakeTimeChecker ())
++    .AddAttribute ("Distance",
++                   "Change current direction and speed after moving for this distance.",
++                   DoubleValue (1.0),
++                   MakeDoubleAccessor (&RandomWalk2dOutdoorMobilityModel::m_modeDistance),
++                   MakeDoubleChecker<double> ())
++    .AddAttribute ("Mode",
++                   "The mode indicates the condition used to "
++                   "change the current speed and direction",
++                   EnumValue (RandomWalk2dOutdoorMobilityModel::MODE_DISTANCE),
++                   MakeEnumAccessor (&RandomWalk2dOutdoorMobilityModel::m_mode),
++                   MakeEnumChecker (RandomWalk2dOutdoorMobilityModel::MODE_DISTANCE, "Distance",
++                                    RandomWalk2dOutdoorMobilityModel::MODE_TIME, "Time"))
++    .AddAttribute ("Direction",
++                   "A random variable used to pick the direction (radians).",
++                   StringValue ("ns3::UniformRandomVariable[Min=0.0|Max=6.283184]"),
++                   MakePointerAccessor (&RandomWalk2dOutdoorMobilityModel::m_direction),
++                   MakePointerChecker<RandomVariableStream> ())
++    .AddAttribute ("Speed",
++                   "A random variable used to pick the speed (m/s).",
++                   StringValue ("ns3::UniformRandomVariable[Min=2.0|Max=4.0]"),
++                   MakePointerAccessor (&RandomWalk2dOutdoorMobilityModel::m_speed),
++                   MakePointerChecker<RandomVariableStream> ())
++    .AddAttribute ("Tolerance",
++                   "Tolerance for the intersection point with buildings (m)",
++                   DoubleValue (1e-6),
++                   MakeDoubleAccessor (&RandomWalk2dOutdoorMobilityModel::m_epsilon),
++                   MakeDoubleChecker<double> ())
++  ;
++  return tid;
++}
++
++void
++RandomWalk2dOutdoorMobilityModel::DoInitialize (void)
++{
++  m_maxIter = 100;
++  DoInitializePrivate ();
++  MobilityModel::DoInitialize ();
++}
++
++void
++RandomWalk2dOutdoorMobilityModel::DoInitializePrivate (void)
++{
++  m_helper.Update ();
++  double speed = m_speed->GetValue ();
++  double direction = m_direction->GetValue ();
++  Vector vector (std::cos (direction) * speed,
++                 std::sin (direction) * speed,
++                 0.0);
++  m_helper.SetVelocity (vector);
++  m_helper.Unpause ();
++
++  Time delayLeft;
++  if (m_mode == RandomWalk2dOutdoorMobilityModel::MODE_TIME)
++    {
++      delayLeft = m_modeTime;
++    }
++  else
++    {
++      delayLeft = Seconds (m_modeDistance / speed);
++    }
++  DoWalk (delayLeft);
++}
++
++void
++RandomWalk2dOutdoorMobilityModel::DoWalk (Time delayLeft)
++{
++  Vector position = m_helper.GetCurrentPosition ();
++  Vector speed = m_helper.GetVelocity ();
++  Vector nextPosition = position;
++  nextPosition.x += speed.x * delayLeft.GetSeconds ();
++  nextPosition.y += speed.y * delayLeft.GetSeconds ();
++  m_event.Cancel ();
++
++  // check if the nextPosition is inside a building, or if the line
++  // from position to the next position intersects a building
++  auto outdoorBuilding = IsLineClearOfBuildings (position, nextPosition);
++  bool outdoor = std::get<0> (outdoorBuilding);
++  Ptr<Building> building = std::get<1> (outdoorBuilding);
++
++  if (m_bounds.IsInside (nextPosition))
++    {
++      if (outdoor)
++        {
++          m_event = Simulator::Schedule (delayLeft, &RandomWalk2dOutdoorMobilityModel::DoInitializePrivate, this);
++        }
++      else
++        {
++          NS_LOG_LOGIC ("NextPosition would lead into a building");
++          nextPosition = CalculateIntersectionFromOutside (position, nextPosition, building->GetBoundaries ());
++          Time delay = Seconds ((nextPosition.x - position.x) / speed.x);
++          m_event = Simulator::Schedule (delay, &RandomWalk2dOutdoorMobilityModel::AvoidBuilding, this,
++                                         delayLeft - delay,
++                                         nextPosition
++                                         );
++        }
++    }
++  else
++    {
++      NS_LOG_LOGIC ("Out of bounding box");
++      nextPosition = m_bounds.CalculateIntersection (position, speed);
++      // check that this nextPosition is outdoor
++      auto outdoorBuilding = IsLineClearOfBuildings (position, nextPosition);
++      bool outdoor = std::get<0> (outdoorBuilding);
++      Ptr<Building> building = std::get<1> (outdoorBuilding);
++
++      if (outdoor)
++        {
++          Time delay = Seconds ((nextPosition.x - position.x) / speed.x);
++          m_event = Simulator::Schedule (delay, &RandomWalk2dOutdoorMobilityModel::Rebound, this,
++                                         delayLeft - delay);
++        }
++      else
++        {
++          NS_LOG_LOGIC ("NextPosition would lead into a building");
++          nextPosition = CalculateIntersectionFromOutside (position, nextPosition, building->GetBoundaries ());
++          Time delay = Seconds ((nextPosition.x - position.x) / speed.x);
++          m_event = Simulator::Schedule (delay, &RandomWalk2dOutdoorMobilityModel::AvoidBuilding, this,
++                                         delayLeft - delay,
++                                         nextPosition
++                                         );
++        }
++    }
++  NS_LOG_LOGIC ("Position " << position << " NextPosition " << nextPosition);
++  NotifyCourseChange ();
++}
++
++std::pair<bool, Ptr<Building> >
++RandomWalk2dOutdoorMobilityModel::IsLineClearOfBuildings ( Vector currentPosition, Vector nextPosition ) const
++{
++  for (BuildingList::Iterator bit = BuildingList::Begin (); bit != BuildingList::End (); ++bit)
++    {
++      if ((*bit)->IsInside (nextPosition)) // the nextPosition is inside a building
++        {
++          NS_LOG_LOGIC ("Inside");
++          return std::make_pair (false, (*bit));
++        }
++
++      Box boundaries = (*bit)->GetBoundaries ();
++
++      Vector boxSize (0.5 * (boundaries.xMax - boundaries.xMin),
++                      0.5 * (boundaries.yMax - boundaries.yMin),
++                      0.5 * (boundaries.zMax - boundaries.zMin));
++      Vector boxCenter (boundaries.xMin + boxSize.x,
++                        boundaries.yMin + boxSize.y,
++                        boundaries.zMin + boxSize.z);
++
++      // Put line in box space
++      Vector LB1 (currentPosition.x - boxCenter.x, currentPosition.y - boxCenter.y, currentPosition.z - boxCenter.z);
++      Vector LB2 (nextPosition.x - boxCenter.x, nextPosition.y - boxCenter.y, nextPosition.z - boxCenter.z);
++
++      // Get line midpoint and extent
++      Vector LMid (0.5 * (LB1.x + LB2.x), 0.5 * (LB1.y + LB2.y), 0.5 * (LB1.z + LB2.z));
++      Vector L (LB1.x - LMid.x, LB1.y - LMid.y, LB1.z - LMid.z);
++      Vector LExt ( std::abs (L.x), std::abs (L.y), std::abs (L.z) );
++
++      // Use Separating Axis Test
++      // Separation vector from box center to line center is LMid, since the line is in box space
++      // If the line did not intersect this building, jump to the next building.
++      if ( std::abs ( LMid.x ) > boxSize.x + LExt.x )
++        {
++          continue;
++        }
++      if ( std::abs ( LMid.y ) > boxSize.y + LExt.y )
++        {
++          continue;
++        }
++      if ( std::abs ( LMid.z ) > boxSize.z + LExt.z )
++        {
++          continue;
++        }
++      // Crossproducts of line and each axis
++      if ( std::abs ( LMid.y * L.z - LMid.z * L.y)  >  (boxSize.y * LExt.z + boxSize.z * LExt.y) )
++        {
++          continue;
++        }
++      if ( std::abs ( LMid.x * L.z - LMid.z * L.x)  >  (boxSize.x * LExt.z + boxSize.z * LExt.x) )
++        {
++          continue;
++        }
++      if ( std::abs ( LMid.x * L.y - LMid.y * L.x)  >  (boxSize.x * LExt.y + boxSize.y * LExt.x) )
++        {
++          continue;
++        }
++
++      // No separating axis, the line intersects
++      // If the line intersect this building, return true.
++      return std::make_pair (false, (*bit));
++    }
++
++  Ptr<Building> b = 0;
++  return std::make_pair (true, b);
++}
++
++Vector
++RandomWalk2dOutdoorMobilityModel::CalculateIntersectionFromOutside (const Vector &current, const Vector &next, Box boundaries) const
++{
++  NS_LOG_INFO ("current " << current << " next " << next);
++  bool inside = boundaries.IsInside (current);
++  NS_ASSERT (!inside);
++
++  // get the closest side
++  Rectangle rect = Rectangle (boundaries.xMin, boundaries.xMax, boundaries.yMin, boundaries.yMax);
++  NS_LOG_INFO ("rect " << rect);
++  Rectangle::Side closestSide = rect.GetClosestSide (current);
++
++  double xIntersect  = 0;
++  double yIntersect = 0;
++
++  switch (closestSide)
++    {
++    case Rectangle::RIGHT:
++      NS_LOG_INFO ("RIGTH");
++      xIntersect = boundaries.xMax + m_epsilon;
++      yIntersect =
++        (next.y - current.y) / (next.x - current.x) * (xIntersect - current.x) + current.y;
++      break;
++    case Rectangle::LEFT:
++      NS_LOG_INFO ("LEFT");
++      xIntersect = boundaries.xMin - m_epsilon;
++      yIntersect =
++        (next.y - current.y) / (next.x - current.x) * (xIntersect - current.x) + current.y;
++      break;
++    case Rectangle::TOP:
++      NS_LOG_INFO ("TOP");
++      yIntersect = boundaries.yMax + m_epsilon;
++      xIntersect =
++        (next.x - current.x) / (next.y - current.y) * (yIntersect - current.y) + current.x;
++      break;
++    case Rectangle::BOTTOM:
++      NS_LOG_INFO ("BOTTOM");
++      yIntersect = boundaries.yMin - m_epsilon;
++      xIntersect =
++        (next.x - current.x) / (next.y - current.y) * (yIntersect - current.y) + current.x;
++      break;
++    }
++  NS_LOG_INFO ("xIntersect " << xIntersect << " yIntersect " << yIntersect);
++  return Vector (xIntersect, yIntersect, 0);
++}
++
++void
++RandomWalk2dOutdoorMobilityModel::Rebound (Time delayLeft)
++{
++  m_helper.UpdateWithBounds (m_bounds);
++  Vector position = m_helper.GetCurrentPosition ();
++  Vector speed = m_helper.GetVelocity ();
++  switch (m_bounds.GetClosestSide (position))
++    {
++    case Rectangle::RIGHT:
++    case Rectangle::LEFT:
++      speed.x = -speed.x;
++      break;
++    case Rectangle::TOP:
++    case Rectangle::BOTTOM:
++      speed.y = -speed.y;
++      break;
++    }
++  m_helper.SetVelocity (speed);
++  m_helper.Unpause ();
++  DoWalk (delayLeft);
++}
++
++void
++RandomWalk2dOutdoorMobilityModel::AvoidBuilding (Time delayLeft, Vector intersectPosition)
++{
++  m_helper.Update ();
++
++  bool nextWouldBeInside = true;
++  uint32_t iter = 0;
++
++  while (nextWouldBeInside && iter < m_maxIter)
++    {
++      iter++;
++      double speed = m_speed->GetValue ();
++      double direction = m_direction->GetValue ();
++      Vector velocityVector (std::cos (direction) * speed,
++                             std::sin (direction) * speed,
++                             0.0);
++      m_helper.SetVelocity (velocityVector);
++
++      Vector nextPosition = intersectPosition;
++      nextPosition.x += velocityVector.x * delayLeft.GetSeconds ();
++      nextPosition.y += velocityVector.y * delayLeft.GetSeconds ();
++
++      // check if this is inside the current buildingBox
++      auto outdoorBuilding = IsLineClearOfBuildings (intersectPosition, nextPosition);
++      bool outdoor = std::get<0> (outdoorBuilding);
++
++      if (!outdoor)
++        {
++          NS_LOG_LOGIC ("inside loop intersect " << intersectPosition << " nextPosition "
++                                                 << nextPosition << " " << outdoor << " building " << std::get<1> (outdoorBuilding)->GetBoundaries ());
++        }
++      else
++        {
++          NS_LOG_LOGIC ("inside loop intersect " << intersectPosition << " nextPosition "
++                                                 << nextPosition << " " << outdoor);
++        }
++
++      if (outdoor && m_bounds.IsInside (nextPosition))
++        {
++          nextWouldBeInside = false;
++        }
++    }
++
++  NS_ASSERT_MSG (iter < m_maxIter, "Not able to find an outdoor position" );
++
++  m_helper.Unpause ();
++
++  DoWalk (delayLeft);
++}
++
++void
++RandomWalk2dOutdoorMobilityModel::DoDispose (void)
++{
++  // chain up
++  MobilityModel::DoDispose ();
++}
++Vector
++RandomWalk2dOutdoorMobilityModel::DoGetPosition (void) const
++{
++  m_helper.UpdateWithBounds (m_bounds);
++  return m_helper.GetCurrentPosition ();
++}
++void
++RandomWalk2dOutdoorMobilityModel::DoSetPosition (const Vector &position)
++{
++  NS_ASSERT (m_bounds.IsInside (position));
++  m_helper.SetPosition (position);
++  Simulator::Remove (m_event);
++  m_event = Simulator::ScheduleNow (&RandomWalk2dOutdoorMobilityModel::DoInitializePrivate, this);
++}
++Vector
++RandomWalk2dOutdoorMobilityModel::DoGetVelocity (void) const
++{
++  return m_helper.GetVelocity ();
++}
++int64_t
++RandomWalk2dOutdoorMobilityModel::DoAssignStreams (int64_t stream)
++{
++  m_speed->SetStream (stream);
++  m_direction->SetStream (stream + 1);
++  return 2;
++}
++
++
++} // namespace ns3
+diff -Naru '--exclude=.git' ns3-mmwave/src/buildings/model/random-walk-2d-outdoor-mobility-model.h mmwave-psc/src/buildings/model/random-walk-2d-outdoor-mobility-model.h
+--- ns3-mmwave/src/buildings/model/random-walk-2d-outdoor-mobility-model.h	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/src/buildings/model/random-walk-2d-outdoor-mobility-model.h	2019-02-15 18:12:45.799530777 +0100
+@@ -0,0 +1,129 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2006,2007 INRIA
++ * Copyright (c) 2019 University of Padova
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
++ * Author: Michele Polese <michele.polese@gmail.com>
++ */
++#ifndef RANDOM_WALK_2D_OUTDOOR_MOBILITY_MODEL_H
++#define RANDOM_WALK_2D_OUTDOOR_MOBILITY_MODEL_H
++
++#include "ns3/object.h"
++#include "ns3/nstime.h"
++#include "ns3/event-id.h"
++#include "ns3/rectangle.h"
++#include "ns3/random-variable-stream.h"
++#include "ns3/mobility-model.h"
++#include "ns3/constant-velocity-helper.h"
++#include "ns3/building.h"
++
++namespace ns3 {
++
++
++/**
++ * \ingroup mobility
++ * \brief 2D random walk mobility model which avoids buildings.
++ *
++ * This class reuses most of the code of RandomWalk2dMobilityModel,
++ * but adds the awareness of buildings objects which are avoided
++ * by moving users.
++ * Each instance moves with a speed and direction chosen at random
++ * with the user-provided random variables until
++ * either a fixed distance has been walked or until a fixed amount
++ * of time. If we hit one of the boundaries (specified by a rectangle)
++ * of the model, we rebound on the boundary with a reflexive angle
++ * and speed. If we hit one of the buildings, we rebound with a random
++ * direction which makes sure that the next step does not enter the building.
++ */
++class RandomWalk2dOutdoorMobilityModel : public MobilityModel
++{
++public:
++  /**
++   * Register this type with the TypeId system.
++   * \return the object TypeId
++   */
++  static TypeId GetTypeId (void);
++  /** An enum representing the different working modes of this module. */
++  enum Mode
++  {
++    MODE_DISTANCE,
++    MODE_TIME
++  };
++
++private:
++  /**
++   * \brief Performs the rebound of the node if it reaches a boundary
++   * \param timeLeft The remaining time of the walk
++   */
++  void Rebound (Time timeLeft);
++  /**
++   * \brief Avoid a building
++   * \param timeLeft The remaining time of the walk
++   * \param intersectPosition The position at which the building is intersected
++   */
++  void AvoidBuilding (Time delayLeft, Vector intersectPosition);
++  /**
++   * Walk according to position and velocity, until distance is reached,
++   * time is reached, or intersection with the bounding box, or building
++   */
++  void DoWalk (Time timeLeft);
++  /**
++   * Perform initialization of the object before MobilityModel::DoInitialize ()
++   */
++  void DoInitializePrivate (void);
++  /**
++   * Check if there is a building between two positions (or if the nextPosition is inside a building).
++   * The code is taken from MmWave3gppBuildingsPropagationLossModel
++   * \param currentPosition The current position of the node
++   * \param nextPosition The position to check
++   * \return a pair with a boolean (true if the line between the two position does not intersect building),
++   * and a pointer which is 0 if the boolean is true, or it points to the building which is intersected
++   */
++  std::pair<bool, Ptr<Building> > IsLineClearOfBuildings (Vector currentPosition, Vector nextPosition ) const;
++  /**
++   * Compute the intersecting point of the box represented by boundaries and the line between current and next
++   * Notice that we only consider a 2d plane
++   * \param current The current position
++   * \param next The next position
++   * \param boundaries The boundaries of the building we will intersect
++   * \return a vector with the position of the intersection
++   */
++  Vector CalculateIntersectionFromOutside (const Vector &current, const Vector &next, const Box boundaries) const;
++
++  virtual void DoDispose (void);
++  virtual void DoInitialize (void);
++  virtual Vector DoGetPosition (void) const;
++  virtual void DoSetPosition (const Vector &position);
++  virtual Vector DoGetVelocity (void) const;
++  virtual int64_t DoAssignStreams (int64_t);
++
++  ConstantVelocityHelper m_helper; //!< helper for this object
++  EventId m_event; //!< stored event ID
++  enum Mode m_mode; //!< whether in time or distance mode
++  double m_modeDistance; //!< Change direction and speed after this distance
++  Time m_modeTime; //!< Change current direction and speed after this delay
++  Ptr<RandomVariableStream> m_speed; //!< rv for picking speed
++  Ptr<RandomVariableStream> m_direction; //!< rv for picking direction
++  Rectangle m_bounds; //!< Bounds of the area to cruise
++  double m_epsilon; //!< Tolerance for the intersection point with buildings
++  uint32_t m_maxIter; //!< maximum number of tries to find the next position
++};
++
++
++} // namespace ns3
++
++#endif /* RANDOM_WALK_2D_OUTDOOR_MOBILITY_MODEL_H */
+diff -Naru '--exclude=.git' ns3-mmwave/src/buildings/wscript mmwave-psc/src/buildings/wscript
+--- ns3-mmwave/src/buildings/wscript	2019-02-15 18:12:26.219355605 +0100
++++ mmwave-psc/src/buildings/wscript	2019-02-15 18:12:45.799530777 +0100
+@@ -11,6 +11,8 @@
+         'model/buildings-propagation-loss-model.cc',
+         'model/hybrid-buildings-propagation-loss-model.cc',
+         'model/oh-buildings-propagation-loss-model.cc',
++        'model/random-walk-2d-outdoor-mobility-model.cc',
++        'model/group-slave-outdoor-mobility-model.cc',
+         'helper/building-container.cc',
+         'helper/building-position-allocator.cc',
+         'helper/building-allocator.cc',
+@@ -35,6 +37,8 @@
+         'model/buildings-propagation-loss-model.h',
+         'model/hybrid-buildings-propagation-loss-model.h',
+         'model/oh-buildings-propagation-loss-model.h',
++        'model/random-walk-2d-outdoor-mobility-model.h',
++        'model/group-slave-outdoor-mobility-model.h',
+         'helper/building-container.h',
+         'helper/building-allocator.h',
+         'helper/building-position-allocator.h',
+diff -Naru '--exclude=.git' ns3-mmwave/src/lte/model/epc-mme-application.cc mmwave-psc/src/lte/model/epc-mme-application.cc
+--- ns3-mmwave/src/lte/model/epc-mme-application.cc	2019-02-15 18:12:26.387357103 +0100
++++ mmwave-psc/src/lte/model/epc-mme-application.cc	2019-02-15 18:12:45.955532176 +0100
+@@ -141,7 +141,7 @@
+   std::map<uint64_t, Ptr<UeInfo> >::iterator it = m_ueInfoMap.find (imsi);
+   NS_ASSERT_MSG (it != m_ueInfoMap.end (), "could not find any UE with IMSI " << imsi);
+   it->second->cellId = gci;
+-  EpcS11SapSgw::CreateSessionRequestMessage msg = EpcS11SapSgw::CreateSessionRequestMessage();
++  EpcS11SapSgw::CreateSessionRequestMessage msg;
+   msg.imsi = imsi;
+   msg.uli.gci = gci;
+   for (std::list<BearerInfo>::iterator bit = it->second->bearersToBeActivated.begin ();
+diff -Naru '--exclude=.git' ns3-mmwave/src/lte/model/lte-enb-rrc.cc mmwave-psc/src/lte/model/lte-enb-rrc.cc
+--- ns3-mmwave/src/lte/model/lte-enb-rrc.cc	2019-02-15 18:12:26.531358387 +0100
++++ mmwave-psc/src/lte/model/lte-enb-rrc.cc	2019-02-15 18:12:46.095533432 +0100
+@@ -477,6 +477,7 @@
+       pdcp->SetLcId (lcid);
+       pdcp->SetLtePdcpSapUser (m_drbPdcpSapUser);
+       pdcp->SetLteRlcSapProvider (rlc->GetLteRlcSapProvider ());
++      pdcp->SetBearerQciInfo (bearer);
+       rlc->SetLteRlcSapUser (pdcp->GetLteRlcSapUser ());
+       drbInfo->m_pdcp = pdcp;
+     }
+diff -Naru '--exclude=.git' ns3-mmwave/src/lte/model/lte-rlc.cc mmwave-psc/src/lte/model/lte-rlc.cc
+--- ns3-mmwave/src/lte/model/lte-rlc.cc	2019-02-15 18:12:26.535358424 +0100
++++ mmwave-psc/src/lte/model/lte-rlc.cc	2019-02-15 18:12:46.103533504 +0100
+@@ -318,7 +318,6 @@
+   p.retxQueueSize = 0;
+   p.retxQueueHolDelay = 0;
+   p.statusPduSize = 0;
+-  p.arrivalRate = 0;
+   m_macSapProvider->ReportBufferStatus (p);
+ }
+ 
+diff -Naru '--exclude=.git' ns3-mmwave/src/lte/model/mc-enb-pdcp.cc mmwave-psc/src/lte/model/mc-enb-pdcp.cc
+--- ns3-mmwave/src/lte/model/mc-enb-pdcp.cc	2019-02-15 18:12:26.543358495 +0100
++++ mmwave-psc/src/lte/model/mc-enb-pdcp.cc	2019-02-15 18:12:46.107533541 +0100
+@@ -74,7 +74,8 @@
+     m_epcX2PdcpProvider (0),
+     m_txSequenceNumber (0),
+     m_rxSequenceNumber (0),
+-    m_useMmWaveConnection (false)
++    m_useMmWaveConnection (false),
++    m_alwaysLteDownlink (false)
+ {
+   NS_LOG_FUNCTION (this);
+   m_pdcpSapProvider = new LtePdcpSpecificLtePdcpSapProvider<McEnbPdcp> (this);
+@@ -92,6 +93,11 @@
+ {
+   static TypeId tid = TypeId ("ns3::McEnbPdcp")
+     .SetParent<Object> ()
++    .AddAttribute ("LteDownlink",
++                    "Use LTE for downlink",
++                    BooleanValue (false),
++                    MakeBooleanAccessor (&McEnbPdcp::m_alwaysLteDownlink),
++                    MakeBooleanChecker ())
+     .AddTraceSource ("TxPDU",
+                      "PDU transmission notified to the RLC.",
+                      MakeTraceSourceAccessor (&McEnbPdcp::m_txPdu),
+@@ -199,6 +205,12 @@
+   m_ueDataParams = params;
+ }
+ 
++void
++McEnbPdcp::SetBearerQciInfo (EpsBearer bearer)
++{
++  m_bearerQciInfo = bearer;
++}
++
+ 
+ ////////////////////////////////////////
+ 
+@@ -225,7 +237,10 @@
+   params.rnti = m_rnti;
+   params.lcid = m_lcid;
+ 
+-  if(m_epcX2PdcpProvider == 0 || (!m_useMmWaveConnection))
++  // if this bearer has high priority (which corresponds to an high priority
++  // (value) send it through the LTE link
++  // TODO maybe define a priority threshold
++  if(m_epcX2PdcpProvider == 0 || (!m_useMmWaveConnection) || m_bearerQciInfo.GetPriority () < 10 || m_alwaysLteDownlink)
+   {
+     NS_LOG_INFO(this << " McEnbPdcp: Tx packet to downlink local stack");
+ 
+diff -Naru '--exclude=.git' ns3-mmwave/src/lte/model/mc-enb-pdcp.h mmwave-psc/src/lte/model/mc-enb-pdcp.h
+--- ns3-mmwave/src/lte/model/mc-enb-pdcp.h	2019-02-15 18:12:26.543358495 +0100
++++ mmwave-psc/src/lte/model/mc-enb-pdcp.h	2019-02-15 18:12:46.107533541 +0100
+@@ -1,7 +1,7 @@
+ /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+ /*
+  * Copyright (c) 2011-2012 Centre Tecnologic de Telecomunicacions de Catalunya (CTTC)
+- * Copyright (c) 2016, University of Padova, Dep. of Information Engineering, SIGNET lab. 
++ * Copyright (c) 2016, University of Padova, Dep. of Information Engineering, SIGNET lab.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 as
+@@ -39,12 +39,12 @@
+ /**
+  * MC eNB PDCP entity. It has 2 interfaces to the 2 RLC layers,
+  * the local and the remote one. The interface to the local is a
+- * Rlc Sap, while the interface to the remote is offered by the 
++ * Rlc Sap, while the interface to the remote is offered by the
+  * EpcX2Sap.
+  * Note: there is a single IMSI and lcid (no problem in having the same
+  * in the 2 eNBs), but 2 rnti.
+  */
+-class McEnbPdcp : public LtePdcp 
++class McEnbPdcp : public LtePdcp
+ {
+   friend class McPdcpSpecificLteRlcSapUser;
+   friend class LtePdcpSpecificLtePdcpSapProvider<McEnbPdcp>;
+@@ -123,7 +123,7 @@
+ 
+   /**
+    * Status variables of the PDCP
+-   * 
++   *
+    */
+   struct Status
+   {
+@@ -131,16 +131,16 @@
+     uint16_t rxSn; ///< RX sequence number
+   };
+ 
+-  /** 
+-   * 
++  /**
++   *
+    * \return the current status of the PDCP
+    */
+   Status GetStatus ();
+ 
+   /**
+    * Set the status of the PDCP
+-   * 
+-   * \param s 
++   *
++   * \param s
+    */
+   void SetStatus (Status s);
+ 
+@@ -151,6 +151,12 @@
+   void SetUeDataParams(EpcX2Sap::UeDataParams params);
+ 
+   /**
++   * Set the bearer info object
++   * \param the EpsBearer object
++   */
++  void SetBearerQciInfo (EpsBearer bearer);
++
++  /**
+    * TracedCallback for PDU transmission event.
+    *
+    * \param [in] rnti The C-RNTI identifying the UE.
+@@ -208,7 +214,7 @@
+   TracedCallback<uint16_t, uint8_t, uint32_t> m_txPdu;
+   /**
+    * Used to inform of a PDU reception from the RLC SAP user.
+-   * The parameters are RNTI, LCID, bytes delivered and delivery delay in nanoseconds. 
++   * The parameters are RNTI, LCID, bytes delivered and delivery delay in nanoseconds.
+    */
+   TracedCallback<uint16_t, uint8_t, uint32_t, uint64_t> m_rxPdu;
+ 
+@@ -235,6 +241,9 @@
+ 
+   bool m_useMmWaveConnection;
+ 
++  EpsBearer m_bearerQciInfo;
++
++  bool m_alwaysLteDownlink;
+ };
+ 
+ 
+diff -Naru '--exclude=.git' ns3-mmwave/src/mmwave/model/mmwave-3gpp-propagation-loss-model.cc mmwave-psc/src/mmwave/model/mmwave-3gpp-propagation-loss-model.cc
+--- ns3-mmwave/src/mmwave/model/mmwave-3gpp-propagation-loss-model.cc	2019-02-15 18:12:26.715360029 +0100
++++ mmwave-psc/src/mmwave/model/mmwave-3gpp-propagation-loss-model.cc	2019-02-15 18:12:46.267534977 +0100
+@@ -385,7 +385,7 @@
+     {
+       if (distance2D < 10)
+         {
+-          NS_LOG_UNCOND ("The 2D distance is smaller than 10 meters, the 3GPP UMa model may not be accurate");
++          //NS_LOG_UNCOND ("The 2D distance is smaller than 10 meters, the 3GPP UMa model may not be accurate");
+         }
+ 
+       //default base station value is 25 m
+diff -Naru '--exclude=.git' ns3-mmwave/src/mmwave/model/mmwave-flex-tti-maxweight-mac-scheduler.h mmwave-psc/src/mmwave/model/mmwave-flex-tti-maxweight-mac-scheduler.h
+--- ns3-mmwave/src/mmwave/model/mmwave-flex-tti-maxweight-mac-scheduler.h	2019-02-15 18:12:26.719360065 +0100
++++ mmwave-psc/src/mmwave/model/mmwave-flex-tti-maxweight-mac-scheduler.h	2019-02-15 18:12:46.271535012 +0100
+@@ -132,9 +132,7 @@
+         m_dlSymbolsRetx (0),
+         m_ulSymbolsRetx (0),
+         m_dlTbSize (0),
+-        m_ulTbSize (0),
+-        m_dlAllocDone (false),
+-        m_ulAllocDone (false)
++        m_ulTbSize (0)
+     {
+     }
+ 
+@@ -151,9 +149,7 @@
+         m_dlSymbolsRetx (0),
+         m_ulSymbolsRetx (0),
+         m_dlTbSize (0),
+-        m_ulTbSize (0),
+-        m_dlAllocDone (false),
+-        m_ulAllocDone (false)
++        m_ulTbSize (0)
+     {
+     }
+ 
+diff -Naru '--exclude=.git' ns3-mmwave/src/mmwave/model/mmwave-phy-mac-common.cc mmwave-psc/src/mmwave/model/mmwave-phy-mac-common.cc
+--- ns3-mmwave/src/mmwave/model/mmwave-phy-mac-common.cc	2019-02-15 18:12:26.723360100 +0100
++++ mmwave-psc/src/mmwave/model/mmwave-phy-mac-common.cc	2019-02-15 18:12:46.275535049 +0100
+@@ -165,6 +165,11 @@
+                    UintegerValue (0),
+                    MakeUintegerAccessor (&MmWavePhyMacCommon::m_componentCarrierId),
+                    MakeUintegerChecker<uint8_t> ())
++    .AddAttribute ("NumRefScPerSym",
++                   "for TDMA, number of reference subcarriers across entire bandwidth (default to 1/4th of SCs)",
++                   UintegerValue (864),
++                   MakeUintegerAccessor (&MmWavePhyMacCommon::m_numRefScPerSym),
++                   MakeUintegerChecker<uint32_t> ())
+   ;
+ 
+   return tid;
+diff -Naru '--exclude=.git' ns3-mmwave/src/mmwave/model/mmwave-ue-phy.cc mmwave-psc/src/mmwave/model/mmwave-ue-phy.cc
+--- ns3-mmwave/src/mmwave/model/mmwave-ue-phy.cc	2019-02-15 18:12:26.723360100 +0100
++++ mmwave-psc/src/mmwave/model/mmwave-ue-phy.cc	2019-02-15 18:12:46.275535049 +0100
+@@ -881,8 +881,6 @@
+ 
+   dlcqi.m_rnti = m_rnti;
+   dlcqi.m_cqiType = DlCqiInfo::WB;
+-  dlcqi.m_ri = 0;
+-  dlcqi.m_wbPmi = 0;
+ 
+   std::vector<int> cqi;
+ 
+diff -Naru '--exclude=.git' ns3-mmwave/src/mobility/helper/group-mobility-helper.cc mmwave-psc/src/mobility/helper/group-mobility-helper.cc
+--- ns3-mmwave/src/mobility/helper/group-mobility-helper.cc	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/src/mobility/helper/group-mobility-helper.cc	2019-02-15 18:12:46.287535156 +0100
+@@ -0,0 +1,115 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2019 University of Padova
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ * Author: Michele Polese <michele.polese@gmail.com>
++ */
++
++#include "ns3/group-mobility-helper.h"
++#include "ns3/mobility-model.h"
++#include "ns3/position-allocator.h"
++#include "ns3/group-slave-mobility-model.h"
++#include "ns3/log.h"
++#include "ns3/pointer.h"
++#include "ns3/config.h"
++#include "ns3/simulator.h"
++#include "ns3/names.h"
++#include "ns3/string.h"
++#include <iostream>
++
++namespace ns3 {
++
++NS_LOG_COMPONENT_DEFINE ("GroupMobilityHelper");
++
++GroupMobilityHelper::GroupMobilityHelper ()
++{
++  m_mobilityHelper = 0;
++}
++
++GroupMobilityHelper::~GroupMobilityHelper ()
++{
++  m_mobilityHelper = 0;
++}
++
++MobilityHelper*
++GroupMobilityHelper::GetMobilityHelper ()
++{
++  return m_mobilityHelper;
++}
++
++TypeId
++GroupMobilityHelper::GetTypeId (void)
++{
++  static TypeId
++    tid =
++    TypeId ("ns3::GroupMobilityHelper")
++    .SetParent<Object> ()
++    .AddConstructor<GroupMobilityHelper> ()
++    .AddAttribute ("GroupSlaveMobilityModel",
++                   "A string the specifies which slave mobility model should be used.",
++                   StringValue ("ns3::GroupSlaveMobilityModel"),
++                   MakeStringAccessor (&GroupMobilityHelper::m_slaveMobilityModel),
++                   MakeStringChecker ())
++    .AddAttribute ("PathDeviationRandomVariable",
++                   "A random variable used to pick the deviations (in each direction) from the master position.",
++                   StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=1|Bound=20]"),
++                   MakeStringAccessor (&GroupMobilityHelper::m_randomVarString),
++                   MakeStringChecker ())
++  ;
++  return tid;
++}
++
++void
++GroupMobilityHelper::SetMobilityHelper (MobilityHelper* helper)
++{
++  m_mobilityHelper = helper;
++  m_privateMobilityHelper.SetMobilityModel (m_slaveMobilityModel,
++                                            "RandomVariable", StringValue (m_randomVarString));
++}
++
++NodeContainer
++GroupMobilityHelper::InstallGroupMobility (NodeContainer nodes)
++{
++  // check that the MobilityHelper is valid
++  NS_ABORT_MSG_IF (m_mobilityHelper == 0, "MobilityHelper not set");
++
++  // create the master node
++  Ptr<Node> referenceNode = CreateObject<Node>();
++  NodeContainer toBeReturned;
++  toBeReturned.Add (referenceNode);
++
++  // install the mobilitymodel in the referenceNode
++  (*m_mobilityHelper).Install (referenceNode);
++  Ptr<MobilityModel> referenceMobilityModel = referenceNode->GetObject<MobilityModel>();
++  Vector referencePosition = referenceMobilityModel->GetPosition ();
++
++  NS_LOG_INFO ("Reference starting position " << referencePosition);
++
++  // install the slave MobilityModel in the other nodes
++  for (auto nodeIt = nodes.Begin (); nodeIt != nodes.End (); ++nodeIt)
++    {
++      NS_LOG_INFO ("Install slave mobility in normal nodes");
++      m_privateMobilityHelper.Install ((*nodeIt));
++      (*nodeIt)->GetObject<GroupSlaveMobilityModel>()->SetMasterMobilityModel (referenceMobilityModel);
++      (*nodeIt)->GetObject<MobilityModel>()->SetPosition (referencePosition);
++    }
++
++  toBeReturned.Add (nodes);
++
++  return toBeReturned;
++}
++
++}
+\ Manca newline alla fine del file
+diff -Naru '--exclude=.git' ns3-mmwave/src/mobility/helper/group-mobility-helper.h mmwave-psc/src/mobility/helper/group-mobility-helper.h
+--- ns3-mmwave/src/mobility/helper/group-mobility-helper.h	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/src/mobility/helper/group-mobility-helper.h	2019-02-15 18:12:46.287535156 +0100
+@@ -0,0 +1,87 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2019 University of Padova
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ * Author: Michele Polese <michele.polese@gmail.com>
++ */
++
++#ifndef GROUP_MOBILITY_HELPER_H
++#define GROUP_MOBILITY_HELPER_H
++
++#include <vector>
++#include "ns3/object-factory.h"
++#include "ns3/attribute.h"
++#include "ns3/output-stream-wrapper.h"
++#include "ns3/position-allocator.h"
++#include "node-container.h"
++#include "ns3/mobility-helper.h"
++
++namespace ns3 {
++
++class PositionAllocator;
++class MobilityModel;
++
++/**
++ * \ingroup mobility
++ * \brief Helper used to install master and slave mobility models
++ *
++ * GroupMobilityHelper::InstallGroupMobility is the most important method here.
++ */
++class GroupMobilityHelper : public Object
++{
++public:
++  /**
++   * Construct a GroupMobilityHelper
++   */
++  GroupMobilityHelper ();
++
++  /**
++   * Destroy a GroupMobilityHelper
++   */
++  ~GroupMobilityHelper ();
++
++  static TypeId GetTypeId (void);
++
++  /**
++   * Get a pointer to the associated MobilityHelper
++   * \return a pointer to the MobilityHelper
++   */
++  MobilityHelper* GetMobilityHelper();
++
++  /**
++   * Set a pointer to the associated MobilityHelper
++   * \param a pointer to the MobilityHelper
++   */
++  void SetMobilityHelper(MobilityHelper* helper);
++
++  /**
++   * Install the slave mobility model in the nodes passed as parameter
++   * \param nodes a NodeContainer with the slaves
++   * \return a NodeContainer with the master and the slaves
++   */
++  NodeContainer InstallGroupMobility(NodeContainer nodes);
++
++protected:
++  MobilityHelper* m_mobilityHelper; //!< the MobilityHelper used to configure the master
++  MobilityHelper m_privateMobilityHelper; //!< the MobilityHelper used to configure the slave
++  std::string m_randomVarString; //!< a string which describes the type of RandomVariableStream for the variance of the slaves
++  std::string m_slaveMobilityModel; //!< a string which describes the type of slave MobilityModel
++
++};
++
++} // namespace ns3
++
++#endif /* GROUP_MOBILITY_HELPER_H */
+\ Manca newline alla fine del file
+diff -Naru '--exclude=.git' ns3-mmwave/src/mobility/model/group-slave-mobility-model.cc mmwave-psc/src/mobility/model/group-slave-mobility-model.cc
+--- ns3-mmwave/src/mobility/model/group-slave-mobility-model.cc	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/src/mobility/model/group-slave-mobility-model.cc	2019-02-15 18:12:46.287535156 +0100
+@@ -0,0 +1,133 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2019 University of Padova
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ * Author: Michele Polese <michele.polese@gmail.com>
++ */
++#include "group-slave-mobility-model.h"
++#include "ns3/string.h"
++#include "ns3/uinteger.h"
++#include "ns3/pointer.h"
++#include "ns3/log.h"
++#include "ns3/node.h"
++#include "ns3/config.h"
++
++namespace ns3 {
++
++NS_OBJECT_ENSURE_REGISTERED (GroupSlaveMobilityModel);
++NS_LOG_COMPONENT_DEFINE ("GroupSlaveMobilityModel");
++
++TypeId
++GroupSlaveMobilityModel::GetTypeId (void)
++{
++  static TypeId tid = TypeId ("ns3::GroupSlaveMobilityModel")
++    .SetParent<MobilityModel> ()
++    .SetGroupName ("Mobility")
++    .AddConstructor<GroupSlaveMobilityModel> ()
++    .AddAttribute ("RandomVariable",
++                   "A random variable used to pick the deviations (in each direction) from the master position.",
++                   StringValue ("ns3::NormalRandomVariable[Mean=0.0|Variance=1|Bound=20]"),
++                   MakePointerAccessor (&GroupSlaveMobilityModel::m_randomVar),
++                   MakePointerChecker<RandomVariableStream> ())
++    .AddAttribute ("MaxIterations",
++                   "Set a maximum number of iterations for the random sampling of the slave position, when checking for special conditions",
++                   UintegerValue(100000),
++                   MakeUintegerAccessor (&GroupSlaveMobilityModel::m_maxIterations),
++                   MakeUintegerChecker<uint32_t> ())
++  ;
++  return tid;
++}
++
++GroupSlaveMobilityModel::GroupSlaveMobilityModel ()
++{
++}
++GroupSlaveMobilityModel::~GroupSlaveMobilityModel ()
++{
++}
++
++
++void
++GroupSlaveMobilityModel::MasterCourseChanged (Ptr<MobilityModel const> master)
++{
++  NS_ABORT_MSG_IF (master != m_master, "cb master and private m_master are not the same");
++
++  Vector masterPosition = m_master->GetPosition ();
++  Vector position = DoGetPosition();
++
++  NS_LOG_INFO ("Master position " << masterPosition
++                                  << " randomizedPosition " << position);
++  NotifyCourseChange ();
++}
++
++void
++GroupSlaveMobilityModel::SetMasterMobilityModel (Ptr<MobilityModel> model)
++{
++  m_master = model;
++
++  // register the callback to MasterCourseChanged
++  auto nodeid = model->GetObject<Node>()->GetId ();
++  std::ostringstream oss;
++  oss << "/NodeList/" << nodeid << "/$ns3::MobilityModel/CourseChange";
++  Config::ConnectWithoutContext (oss.str (),
++                                 MakeCallback (&GroupSlaveMobilityModel::MasterCourseChanged, this));
++
++}
++
++bool
++GroupSlaveMobilityModel::CheckForSpecialConditions (Vector position) const
++{
++  // no special conditions to check here, simply a stub method
++  // that it easy to extend
++  return true;
++}
++
++
++Vector
++GroupSlaveMobilityModel::DoGetPosition (void) const
++{
++  // get the master position
++  Vector masterPosition = m_master->GetPosition ();
++  Vector position;
++  uint32_t iter = 0;
++  // get a new position and randomize until a valid position is found
++  do
++    {
++      ++iter;
++      position = Vector (
++          masterPosition.x + m_randomVar->GetValue (),
++          masterPosition.y + m_randomVar->GetValue (),
++          masterPosition.z
++          );
++    }
++  while (!CheckForSpecialConditions (position) && iter < m_maxIterations);
++
++  NS_ABORT_MSG_IF(iter > m_maxIterations, "Special condition not satisfied");
++  return position;
++}
++
++void
++GroupSlaveMobilityModel::DoSetPosition (const Vector &position)
++{
++  NotifyCourseChange ();
++}
++
++Vector
++GroupSlaveMobilityModel::DoGetVelocity (void) const
++{
++  return m_master->GetVelocity ();
++}
++
++} // namespace ns3
+diff -Naru '--exclude=.git' ns3-mmwave/src/mobility/model/group-slave-mobility-model.h mmwave-psc/src/mobility/model/group-slave-mobility-model.h
+--- ns3-mmwave/src/mobility/model/group-slave-mobility-model.h	1970-01-01 01:00:00.000000000 +0100
++++ mmwave-psc/src/mobility/model/group-slave-mobility-model.h	2019-02-15 18:12:46.287535156 +0100
+@@ -0,0 +1,92 @@
++/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
++/*
++ * Copyright (c) 2019 University of Padova
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation;
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
++ *
++ * Author: Michele Polese <michele.polese@gmail.com>
++ */
++#ifndef GROUP_SLAVE_MOBILITY_MODEL_H
++#define GROUP_SLAVE_MOBILITY_MODEL_H
++
++#include "mobility-model.h"
++#include "ns3/random-variable-stream.h"
++
++namespace ns3 {
++
++/**
++ * \ingroup mobility
++ *
++ * \brief MobilityModel which follows a master MobilityModel with a certain deviation
++ */
++class GroupSlaveMobilityModel : public MobilityModel
++{
++public:
++  /**
++   * Register this type with the TypeId system.
++   * \return the object TypeId
++   */
++  static TypeId GetTypeId (void);
++
++  /**
++   * Create a GroupSlaveMobilityModel object
++   */
++  GroupSlaveMobilityModel ();
++  
++  /**
++   * Destroy a GroupSlaveMobilityModel object
++   */
++  virtual ~GroupSlaveMobilityModel ();
++
++  /**
++   * Get the associated master MobilityModel
++   * \return a smart pointer to the associated master MobilityModel
++   */
++  Ptr<MobilityModel> GetMasterMobilityModel ();
++
++  /**
++   * Set the associated master MobilityModel
++   * \param a smart pointer to the associated master MobilityModel
++   */
++  void SetMasterMobilityModel (Ptr<MobilityModel> model);
++
++  /**
++   * Method to be called when the master trigger the NotifyCourseChanged callback
++   * \param a smart pointer to the associated master MobilityModel
++   */
++  void MasterCourseChanged (Ptr<MobilityModel const> master);
++
++protected:
++  /**
++   * check for conditions that can lead to the rejection of the selected position
++   * \param postion a Vector with a position
++   * \return a bool, which is true if the special condition applies
++   */
++  virtual bool CheckForSpecialConditions (Vector position) const;
++
++private:
++  Vector DoGetPosition (void) const;
++  Vector DoGetVelocity (void) const;
++  void DoSetPosition (const Vector &position);
++
++protected:
++  Ptr<MobilityModel> m_master; //!< the master mobility model
++  Ptr<RandomVariableStream> m_randomVar; //<! the random variable that is used to randomize the position
++  Vector m_lastPosition; //!< the last position computed after a master course change
++  uint32_t m_maxIterations;
++};
++
++} // namespace ns3
++
++#endif /* GROUP_SLAVE_MOBILITY_MODEL_H */
+diff -Naru '--exclude=.git' ns3-mmwave/src/mobility/model/rectangle.cc mmwave-psc/src/mobility/model/rectangle.cc
+--- ns3-mmwave/src/mobility/model/rectangle.cc	2019-02-15 18:12:26.731360171 +0100
++++ mmwave-psc/src/mobility/model/rectangle.cc	2019-02-15 18:12:46.287535156 +0100
+@@ -55,32 +55,120 @@
+ Rectangle::Side
+ Rectangle::GetClosestSide (const Vector &position) const
+ {
+-  double xMinDist = std::abs (position.x - this->xMin);
+-  double xMaxDist = std::abs (this->xMax - position.x);
+-  double yMinDist = std::abs (position.y - this->yMin);
+-  double yMaxDist = std::abs (this->yMax - position.y);
+-  double minX = std::min (xMinDist, xMaxDist);
+-  double minY = std::min (yMinDist, yMaxDist);
+-  if (minX < minY)
++  if (IsInside (position))
+     {
+-      if (xMinDist < xMaxDist)
++      double xMinDist = std::abs (position.x - this->xMin);
++      double xMaxDist = std::abs (this->xMax - position.x);
++      double yMinDist = std::abs (position.y - this->yMin);
++      double yMaxDist = std::abs (this->yMax - position.y);
++      double minX = std::min (xMinDist, xMaxDist);
++      double minY = std::min (yMinDist, yMaxDist);
++      if (minX < minY)
+         {
+-          return LEFT;
++          if (xMinDist < xMaxDist)
++            {
++              return LEFT;
++            }
++          else
++            {
++              return RIGHT;
++            }
+         }
+       else
+         {
+-          return RIGHT;
++          if (yMinDist < yMaxDist)
++            {
++              return BOTTOM;
++            }
++          else
++            {
++              return TOP;
++            }
+         }
+     }
+   else
+     {
+-      if (yMinDist < yMaxDist)
++      if (position.x < this->xMin)
+         {
+-          return BOTTOM;
++          if (position.y < this->yMin)
++            {
++              double yDiff = this->yMin - position.y;
++              double xDiff = this->xMin - position.x;
++              if (yDiff > xDiff)
++                {
++                  return BOTTOM;
++                }
++              else
++                {
++                  return LEFT;
++                }
++            }
++          else if (position.y < this->yMax)
++            {
++              return LEFT;
++            }
++          else
++            {
++              double yDiff = position.y - this->yMax;
++              double xDiff = this->xMin - position.x;
++              if (yDiff > xDiff)
++                {
++                  return TOP;
++                }
++              else
++                {
++                  return LEFT;
++                }
++            }
++        }
++      else if (position.x < this->xMax)
++        {
++          if (position.y < this->yMin)
++            {
++              return BOTTOM;
++            }
++          else if (position.y < this->yMax)
++            {
++              NS_FATAL_ERROR ("This region should have been reached if the IsInside check was true");
++              return TOP; // silence compiler warning
++            }
++          else
++            {
++              return TOP;
++            }
+         }
+       else
+         {
+-          return TOP;
++          if (position.y < this->yMin)
++            {
++              double yDiff = this->yMin - position.y;
++              double xDiff = position.x - this->xMin;
++              if (yDiff > xDiff)
++                {
++                  return BOTTOM;
++                }
++              else
++                {
++                  return RIGHT;
++                }
++            }
++          else if (position.y < this->yMax)
++            {
++              return RIGHT;
++            }
++          else
++            {
++              double yDiff = position.y - this->yMax;
++              double xDiff = position.x - this->xMin;
++              if (yDiff > xDiff)
++                {
++                  return TOP;
++                }
++              else
++                {
++                  return RIGHT;
++                }
++            }
+         }
+     }
+ }
+diff -Naru '--exclude=.git' ns3-mmwave/src/mobility/wscript mmwave-psc/src/mobility/wscript
+--- ns3-mmwave/src/mobility/wscript	2019-02-15 18:12:26.731360171 +0100
++++ mmwave-psc/src/mobility/wscript	2019-02-15 18:12:46.287535156 +0100
+@@ -22,6 +22,8 @@
+         'model/waypoint-mobility-model.cc',
+         'helper/mobility-helper.cc',
+         'helper/ns2-mobility-helper.cc',
++        'helper/group-mobility-helper.cc',
++        'model/group-slave-mobility-model.cc'
+         ]
+ 
+     mobility_test = bld.create_ns3_module_test_library('mobility')
+@@ -57,6 +59,8 @@
+         'model/waypoint-mobility-model.h',
+         'helper/mobility-helper.h',
+         'helper/ns2-mobility-helper.h',
++        'helper/group-mobility-helper.h',
++        'model/group-slave-mobility-model.h'
+         ]
+ 
+     if (bld.env['ENABLE_EXAMPLES']):
