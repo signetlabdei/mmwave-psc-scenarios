@@ -17,4 +17,4 @@ before_install:
 script:
   - bash install.sh chemical-plant-scenario
   - bash install.sh mva-scenario
-  - bash install.sh high-school-shooting
+  - bash install.sh high-school-shooting-scenario
