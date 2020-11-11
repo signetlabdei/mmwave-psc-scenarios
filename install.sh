@@ -8,6 +8,7 @@
 
 NS3_MMWAVE_URL="https://github.com/nyuwireless-unipd/ns3-mmwave.git"
 NS3_MMWAVE_IAB_URL="https://github.com/signetlabdei/ns3-mmwave-iab"
+NS3_MMWAVE_LAST_COMMIT="cbfb03d06c15aa82d0297a105bb373db88d1bb5c"
 
 if [ $# -gt 0 ]; then
   if [ "$1" == "chemical-plant-scenario" ]; then
@@ -42,6 +43,7 @@ if [ $choice = 1 ]; then
 
   # Appy the patch
   cd $INSTALLATION_FOLDER
+  git reset --hard $NS3_MMWAVE_LAST_COMMIT
   patch -p1 < ../.patches/ns3-mmwave-psc.patch
 
   # Copy the example
@@ -61,6 +63,7 @@ elif [ $choice = 2 ]; then
 
   # Appy the patch
   cd $INSTALLATION_FOLDER
+  git reset --hard $NS3_MMWAVE_LAST_COMMIT  
   patch -p1 < ../.patches/ns3-mmwave-psc.patch
 
   # Copy the example
